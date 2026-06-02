@@ -1,0 +1,62 @@
+{
+  "brand": "格力",
+  "brandEn": "Gree",
+  "type": "ac",
+  "protocol": "NEC",
+  "address": "0x00FF",
+  "frequency": 38000,
+  "models": [
+    {
+      "name": "格力通用",
+      "code": "gree_universal",
+      "description": "适用于大部分格力空调",
+      "config": {
+        "name": "格力空调",
+        "brand": "格力",
+        "type": "ac",
+        "protocol": "NEC",
+        "address": "0x00FF",
+        "frequency": 38000,
+        "gridColumns": 4,
+        "buttons": [
+          {"id": "power", "label": "电源", "icon": "power", "command": "0x00", "row": 0, "col": 0},
+          {"id": "mode", "label": "模式", "icon": "mode", "command": "0x01", "row": 0, "col": 1},
+          {"id": "fan", "label": "风速", "icon": "fan", "command": "0x02", "row": 0, "col": 2},
+          {"id": "swing", "label": "摆风", "icon": "swing", "command": "0x03", "row": 0, "col": 3},
+          {"id": "temp_up", "label": "温度+", "icon": "arrow_up", "command": "0x04", "row": 1, "col": 0},
+          {"id": "temp_down", "label": "温度-", "icon": "arrow_down", "command": "0x05", "row": 1, "col": 1},
+          {"id": "timer", "label": "定时", "icon": "timer", "command": "0x06", "row": 1, "col": 2},
+          {"id": "sleep", "label": "睡眠", "icon": "bedtime", "command": "0x07", "row": 1, "col": 3},
+          {"id": "turbo", "label": "强劲", "icon": "bolt", "command": "0x08", "row": 2, "col": 0},
+          {"id": "light", "label": "灯光", "icon": "light_mode", "command": "0x09", "row": 2, "col": 1},
+          {"id": "eco", "label": "节能", "icon": "eco", "command": "0x0A", "row": 2, "col": 2},
+          {"id": "health", "label": "健康", "icon": "favorite", "command": "0x0B", "row": 2, "col": 3}
+        ]
+      }
+    },
+    {
+      "name": "格力变频",
+      "code": "gree_inverter",
+      "description": "适用于格力变频空调",
+      "config": {
+        "name": "格力变频空调",
+        "brand": "格力",
+        "type": "ac",
+        "protocol": "NEC",
+        "address": "0x00FF",
+        "frequency": 38000,
+        "gridColumns": 4,
+        "buttons": [
+          {"id": "power", "label": "电源", "icon": "power", "command": "0x10", "row": 0, "col": 0},
+          {"id": "mode", "label": "模式", "icon": "mode", "command": "0x11", "row": 0, "col": 1},
+          {"id": "fan", "label": "风速", "icon": "fan", "command": "0x12", "row": 0, "col": 2},
+          {"id": "swing", "label": "摆风", "icon": "swing", "command": "0x13", "row": 0, "col": 3},
+          {"id": "temp_up", "label": "温度+", "icon": "arrow_up", "command": "0x14", "row": 1, "col": 0},
+          {"id": "temp_down", "label": "温度-", "icon": "arrow_down", "command": "0x15", "row": 1, "col": 1},
+          {"id": "timer", "label": "定时", "icon": "timer", "command": "0x16", "row": 1, "col": 2},
+          {"id": "sleep", "label": "睡眠", "icon": "bedtime", "command": "0x17", "row": 1, "col": 3}
+        ]
+      }
+    }
+  ]
+}

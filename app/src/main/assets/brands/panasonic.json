@@ -1,0 +1,36 @@
+{
+  "brand": "松下",
+  "brandEn": "Panasonic",
+  "type": "ac",
+  "protocol": "PANASONIC",
+  "address": "0x00FF",
+  "frequency": 38000,
+  "models": [
+    {
+      "name": "松下通用",
+      "code": "panasonic_universal",
+      "description": "适用于大部分松下空调",
+      "config": {
+        "name": "松下空调",
+        "brand": "松下",
+        "type": "ac",
+        "protocol": "PANASONIC",
+        "address": "0x00FF",
+        "frequency": 38000,
+        "gridColumns": 4,
+        "buttons": [
+          {"id": "power", "label": "电源", "icon": "power", "command": "0x00", "row": 0, "col": 0},
+          {"id": "mode", "label": "模式", "icon": "mode", "command": "0x01", "row": 0, "col": 1},
+          {"id": "fan", "label": "风速", "icon": "fan", "command": "0x02", "row": 0, "col": 2},
+          {"id": "swing", "label": "摆风", "icon": "swing", "command": "0x03", "row": 0, "col": 3},
+          {"id": "temp_up", "label": "温度+", "icon": "arrow_up", "command": "0x04", "row": 1, "col": 0},
+          {"id": "temp_down", "label": "温度-", "icon": "arrow_down", "command": "0x05", "row": 1, "col": 1},
+          {"id": "timer", "label": "定时", "icon": "timer", "command": "0x06", "row": 1, "col": 2},
+          {"id": "sleep", "label": "睡眠", "icon": "bedtime", "command": "0x07", "row": 1, "col": 3},
+          {"id": "quiet", "label": "静音", "icon": "volume_off", "command": "0x08", "row": 2, "col": 0},
+          {"id": "powerful", "label": "强劲", "icon": "bolt", "command": "0x09", "row": 2, "col": 1}
+        ]
+      }
+    }
+  ]
+}
