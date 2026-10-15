@@ -1,4 +1,4 @@
-name: Android CI Build
+name: Android CI Build IRRemote (No Source Code Modify)
 
 on:
   push:
@@ -9,30 +9,49 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Generate Gradle Wrapper
-      run: gradle wrapper
+      # 1. 本地CI虚拟机安装独立gradle 8.7，用来生成wrapper，不会改动仓库源码
+      - name: Install Gradle 8.7 on runner
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      # 2. 在CI环境临时生成 gradle wrapper(8.7)，仅CI容器内有效，不会提交到git
+      - name: Generate Gradle Wrapper 8.7 (runtime‑only, not commit)
+        run: gradle wrapper --gradle-version=8.7
 
-    - name: Build & Test
-      run: ./gradlew :app:assembleDebug
+      # 3. 关键！临时patch settings.gradle.kts，把 dependencyResolution → dependencyResolutionManagement
+      # 只是修改CI工作目录里的文件，不会写回github仓库，原始源码保持不变
+      - name: Hot‑patch settings.gradle.kts for Gradle8 (runtime‑only)
+        run: |
+          sed -i 's/dependencyResolution {/dependencyResolutionManagement {/' settings.gradle.kts
+          cat settings.gradle.kts
 
-    # 上传 Debug APK 作为制品
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Grant execute permission for generated gradlew
+        run: chmod +x gradlew
+
+      # ========== 编译 Debug APK app + examples ==========
+      - name: Build Debug APKs
+        run: ./gradlew :app:assembleDebug :examples:assembleDebug
+
+      # ========== 上传产物 ==========
+      - name: Upload app debug apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload examples debug apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: examples-debug-apk
+          path: examples/build/outputs/apk/debug/*.apk
