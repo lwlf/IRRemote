@@ -1,4 +1,4 @@
-name: Android CI Build IRRemote (No Source Code Modify)
+name: Android CI Build IRRemote (No Source Modify)
 
 on:
   push:
@@ -19,24 +19,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 1. 本地CI虚拟机安装独立gradle 8.7，用来生成wrapper，不会改动仓库源码
+      # =====【重点调换顺序：先临时修改settings，再运行gradle】=====
+      - name: Hot‑patch settings.gradle.kts (runtime only, only change runner copy)
+        run: |
+          sed -i 's/dependencyResolution {/dependencyResolutionManagement {/' settings.gradle.kts
+          cat settings.gradle.kts
+
       - name: Install Gradle 8.7 on runner
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.7"
 
-      # 2. 在CI环境临时生成 gradle wrapper(8.7)，仅CI容器内有效，不会提交到git
-      - name: Generate Gradle Wrapper 8.7 (runtime‑only, not commit)
+      - name: Generate Gradle Wrapper 8.7
         run: gradle wrapper --gradle-version=8.7
 
-      # 3. 关键！临时patch settings.gradle.kts，把 dependencyResolution → dependencyResolutionManagement
-      # 只是修改CI工作目录里的文件，不会写回github仓库，原始源码保持不变
-      - name: Hot‑patch settings.gradle.kts for Gradle8 (runtime‑only)
-        run: |
-          sed -i 's/dependencyResolution {/dependencyResolutionManagement {/' settings.gradle.kts
-          cat settings.gradle.kts
-
-      - name: Grant execute permission for generated gradlew
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       # ========== 编译 Debug APK app + examples ==========
