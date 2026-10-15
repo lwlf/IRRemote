@@ -1,4 +1,4 @@
-name: Android CI Build IRRemote (No Source Modify)
+name: Android CI Build IRRemote (No Source Modify + Cache)
 
 on:
   push:
@@ -19,15 +19,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 临时修复settings.gradle.kts语法
-      - name: Hot‑patch settings.gradle.kts
-        run: |
-          sed -i 's/dependencyResolution {/dependencyResolutionManagement {/' settings.gradle.kts
-
-      - name: Install Gradle 8.7 on runner
+      # Gradle 缓存（自动缓存依赖、wrapper，无需手动配置cache路径）
+      - name: Setup Gradle with build‑cache
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.7"
+
+      # 临时修复 settings.gradle.kts 语法
+      - name: Hot‑patch settings.gradle.kts
+        run: |
+          sed -i 's/dependencyResolution {/dependencyResolutionManagement {/' settings.gradle.kts
 
       - name: Generate Gradle Wrapper 8.7
         run: gradle wrapper --gradle-version=8.7
@@ -35,7 +36,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # ========= 【新增】CI内临时创建占位图标，解决ic_launcher缺失 =========
+      # 修复 Compose HorizontalDivider 未定义
+      - name: Patch EditorScreen.kt replace HorizontalDivider
+        run: |
+          sed -i 's/HorizontalDivider/Divider/g' app/src/main/java/com/example/irremote/presentation/ui/editor/EditorScreen.kt
+
+      # CI运行时生成占位启动图标，解决资源缺失
       - name: Create placeholder launcher icons (runtime only)
         run: |
           mkdir -p app/src/main/res/mipmap-hdpi
@@ -43,7 +49,6 @@ jobs:
           mkdir -p app/src/main/res/mipmap-xhdpi
           mkdir -p app/src/main/res/mipmap-xxhdpi
           mkdir -p app/src/main/res/mipmap-xxxhdpi
-          # 生成最小1x1透明png占位文件
           echo -n -e '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x00\x00\x00\x00\x83\xbf\x0f\xb5\x00\x00\x00\x0cIDATx\x9cc\x00\x01\x00\x02\x00\xfd\xa2\x05\x1e\x00\x00\x00\x00IEND\xaeB`\x82' > app/src/main/res/mipmap-hdpi/ic_launcher.png
           cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-mdpi/ic_launcher.png
           cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-xhdpi/ic_launcher.png
@@ -55,11 +60,11 @@ jobs:
           cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      # 编译 app Debug APK
+      # 编译 Debug APK
       - name: Build App Debug APK
         run: ./gradlew :app:assembleDebug
 
-      # 上传产物
+      # 上传APK产物
       - name: Upload app debug apk
         uses: actions/upload-artifact@v4
         with:
